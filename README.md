@@ -1,7 +1,8 @@
 # Crime Analysis - City of Boston
 
 Analysed the crime data provided by https://data.boston.gov/dataset/crime-incident-reports-august-2015-to-date-source-new-system. 
-A crime density heat map was generated based on reported locations of crime.
+A crime density heat map was generated based on reported locations of crime. 
+Geospatial data was built by layering crime incident location over map.
 Analysed the crime data grouped by district to see pct change in crime across two years.
 2016-17 has 91561 variables.
 2017-18 has 92041 variables.
