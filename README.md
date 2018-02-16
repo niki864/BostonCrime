@@ -3,8 +3,8 @@
 Analysed the crime data provided by https://data.boston.gov/dataset/crime-incident-reports-august-2015-to-date-source-new-system. 
 A crime density heat map was generated based on reported locations of crime.
 Analysed the crime data grouped by district to see pct change in crime across two years.
-2016-17 -----> 91561 variables
-2017-18 -----> 92041 variables
+2016-17 has 91561 variables.
+2017-18 has 92041 variables.
 
 ## Packages Required
 
@@ -45,6 +45,10 @@ Now we can compare the percentage change between the two years and find out how 
 
 ![alt tag](https://user-images.githubusercontent.com/10093954/36330215-d1e90052-1336-11e8-8052-07571a413c82.jpeg)
 
+## Future
+
+Will be working on a neural network to predict hotspots for the upcoming months. Will be interesting to see if that actually happens IRL.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
@@ -56,3 +60,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
   URL http://www.R-project.org/.
 
 * R Packages used : Plyr, ggmap, ggplot2, lubridate
+

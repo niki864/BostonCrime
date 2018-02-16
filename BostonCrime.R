@@ -39,6 +39,7 @@ library(ggplot2)
 #Plot the Barplot for the table created. Exclude the first column as it contains cases with no district
 yearof2017 <- ggplot(districtwise[-1,], aes(x=District, y=Frequency,fill=District)) +
   geom_bar(stat = "identity") +
+  #applies a minimalistic theme
   theme_minimal() +
   ggtitle("Crime By District - Boston - (Feb 2017-2018)")
 yearof2017
