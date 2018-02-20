@@ -1,5 +1,5 @@
 library(ggmap)
-library(plyr)
+library(dplyr)
 library(lubridate)
 crimedb<-read.csv("crime.csv")
 #remove all incomplete cases
@@ -20,7 +20,7 @@ interestedregion <- ggmap(bostonmap)+
   #scale_y_continuous(limits = c(42.26, 42.42), expand = c(0, 0)) +
   #Include the above two lines if you want to zoom in to just the Boston region
   #Create the density plots for crime regions. Bin size is responsible for resolution
-  stat_density2d(data = lastyear, aes(x=lastyear$Long,y=lastyear$Lat,alpha=..level..,fill=..level..), bins=12,geom='polygon')+
+  stat_density2d(data = lastyear, aes(x=lastyear$Long,y=lastyear$Lat,alpha=..level..,fill=..level..), bins=15,geom='polygon')+
   #Crime Density scale in range of blue to orange to denote intensity
   scale_fill_gradient('Crime\nDensity', low = 'darkmagenta', high = 'gold') +
   #Populate map with the density color scheme
@@ -36,27 +36,28 @@ districtwise <- as.data.frame(table(lastyear$origdistrictname))
 #Rename the columns
 names(districtwise)<-c('District','Frequency')
 library(ggplot2)
-#Plot the Barplot for the table created. Exclude the first column as it contains cases with no district
-yearof2017 <- ggplot(districtwise[-1,], aes(x=District, y=Frequency,fill=District)) +
-  geom_bar(stat = "identity") +
-  #applies a minimalistic theme
-  theme_minimal() +
-  ggtitle("Crime By District - Boston - (Feb 2017-2018)")
+#create a function named plotter that will plot all our graphs when we call it
+plotter <- function(dataset, title){
+  #Plot the Barplot for the table created. Exclude the first column as it contains cases with no district
+  plotout <- ggplot(dataset, aes(x=District, y=dataset[2],fill=District)) +
+    geom_bar(stat = "identity") +
+    #applies a minimalistic theme
+    theme_minimal() +
+    ggtitle(title)
+  return(plotout)
+}
+yearof2017 <- plotter(districtwise[-1,],"Crime By District - Boston - (Feb 2017-2018)")
 yearof2017
 #Do the same for the 2016 year using the yearbeforelast dataframe
 prevyr <- as.data.frame(table(yearbeforelast$origdistrictname))
 names(prevyr)<- c('District','Frequency')
-yearof2016 <- ggplot(prevyr[-1,], aes(x=District, y=Frequency,fill=District)) +
-  geom_bar(stat = "identity") +
-  theme_minimal() +
-  ggtitle("Crime By District - Boston - (Feb 2016-2017)")
+yearof2016 <- plotter(prevyr[-1,],"Crime By District - Boston - (Feb 2016-2017)")
 yearof2016
 #Calculate Percentage change between the two datasets
 crimechange <- data.frame(districtwise$District,(districtwise$Frequency-prevyr$Frequency)*100/prevyr$Frequency)
 names(crimechange) <- c('District','PctChange')
 #Plot percentage change
-pctchange <-  ggplot(crimechange[-1,], aes(x=District, y=PctChange,fill=District)) +
-  geom_bar(stat = "identity") +
-  theme_minimal() +
-  ggtitle("Pct Change in Crime - Boston - (2016-17 vs 2017-18)")
+pctchange <-  plotter(crimechange[-1,],"Pct Change in Crime")
 pctchange
+########################################################
+#Time to graph the change in crime according to seasons.
