@@ -1,17 +1,21 @@
 library(ggmap)
 library(dplyr)
 library(lubridate)
+library(plyr)
 crimedb<-read.csv("crime.csv")
 #remove all incomplete cases
 crimeclean<-crimedb[complete.cases(crimedb),]
 #Add original district names to all district numbers
 crimeclean$origdistrictname <- mapvalues(crimeclean$DISTRICT, from = c('A1','A15','A7','B2','B3','C6','C11','D4','D14','E5','E13','E18'), to=c('DT & Charleston','DT & Charleston','East Boston','Roxbury','Mattapan','South Boston','Dorchester','South End','Brighton','West Roxbury','Jamaica Plain','Hyde Park'))
 #Split dataset for data from 2017 - 2018 Feb
-lastyear <- crimeclean %>% select(INCIDENT_NUMBER,OFFENSE_CODE,OFFENSE_CODE_GROUP,OFFENSE_DESCRIPTION,DISTRICT,REPORTING_AREA,SHOOTING,OCCURRED_ON_DATE,YEAR,MONTH,DAY_OF_WEEK,HOUR,UCR_PART,STREET,Lat,Long,Location,origdistrictname) %>%
-  filter(between(as.Date(OCCURRED_ON_DATE), as.Date("2017-02-01"), as.Date("2018-02-01")))
+getdatabydate <- function(FROM_DATE,TO_DATE){
+  datareturn <- crimeclean %>% select(INCIDENT_NUMBER,OFFENSE_CODE,OFFENSE_CODE_GROUP,OFFENSE_DESCRIPTION,DISTRICT,REPORTING_AREA,SHOOTING,OCCURRED_ON_DATE,YEAR,MONTH,DAY_OF_WEEK,HOUR,UCR_PART,STREET,Lat,Long,Location,origdistrictname) %>%
+    filter(between(as.Date(OCCURRED_ON_DATE), as.Date(FROM_DATE), as.Date(TO_DATE)))
+  return(datareturn)
+}
+lastyear <- getdatabydate("2017-02-01","2018-02-01")
 #Split dataset for data from 2016 - 2017 Feb
-yearbeforelast <- crimeclean %>% select(INCIDENT_NUMBER,OFFENSE_CODE,OFFENSE_CODE_GROUP,OFFENSE_DESCRIPTION,DISTRICT,REPORTING_AREA,SHOOTING,OCCURRED_ON_DATE,YEAR,MONTH,DAY_OF_WEEK,HOUR,UCR_PART,STREET,Lat,Long,Location,origdistrictname) %>%
-  filter(between(as.Date(OCCURRED_ON_DATE), as.Date("2016-02-01"), as.Date("2017-02-01")))
+yearbeforelast <- getdatabydate("2016-02-01","2017-02-01")
 #Get Map of Boston
 bostonmap <- get_map(location = 'boston', zoom = 12, maptype = 'roadmap')
 #Roadmap is only available from Google Maps
@@ -61,3 +65,15 @@ pctchange <-  plotter(crimechange[-1,],"Pct Change in Crime")
 pctchange
 ########################################################
 #Time to graph the change in crime according to seasons.
+#Summer of 2017
+summerdata17 <- getdatabydate("2017-06-01","2017-09-01")
+#Fall of 2017
+falldata17 <- getdatabydate("2017-09-01","2017-12-01")
+#Spring of 2017
+springdata17 <- getdatabydate("2017-03-01","2017-06-01")
+#Winter of 16/17
+winterdata17 <- getdatabydate("2016-12-01","2017-03-01")
+#Plot a graph for seasonal wise number of crime
+seasonwise <- as.data.frame(table(nrow(summerdata17),nrow(falldata17),nrow(winterdata17),nrow(springdata17)))
+names(seasonwise)<-c("Summer","Fall","Winter","Spring","Freq")
+
